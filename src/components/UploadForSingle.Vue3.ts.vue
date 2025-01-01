@@ -1,6 +1,6 @@
 <!--
 Project: upload-for-single
-FileDirPath: src/components/UploadForMultiple.Vue3.ts.vue
+FileDirPath: src/components/UploadForSingle.Vue3.ts.vue
 Author: 12278
 Email: 1227839175@qq.com
 IDE: WebStorm
@@ -92,22 +92,23 @@ CreateDate: 2024-1-1 00:00:00 星期一
 
       background-color: white;
     }
+
   }
+
 }
 </style>
 <template>
   <article class = 'css-reset upload-for-single upload'>
-    <h3 class = 'css-reset'>FormData的多文件上传（uploadType=multiple）：</h3>
+    <h3 class = 'css-reset'>FormData的单文件上传（uploadType=single）：</h3>
     <section class = 'css-reset'>
       <input
-        id = 'UploadForMultiple'
+        id = 'UploadForSingle'
         class = 'css-reset'
-        type = 'file'
-        multiple />
+        type = 'file' />
       <button
         class = 'css-reset'
         type = 'button'
-        @click.prevent = 'UploadForMultiple'>上传
+        @click.prevent = 'UploadForSingle'>上传
       </button>
     </section>
   </article>
@@ -119,30 +120,39 @@ CreateDate: 2024-1-1 00:00:00 星期一
 'use strict';
 
 import {
+  sha512,
+} from 'js-sha512';
+
+import {
   onMounted,
 } from 'vue';
 
+function FileSRI( data: Uint8Array ): string{
+  return sha512.create().update( data ).hex();
+}
+
 // @ts-expect-error
-function UploadForMultiple( event: Event ): void{
-  const uploadForMultiple: HTMLInputElement = document.querySelector( '#UploadForMultiple' ) as HTMLInputElement,
-    files: FileList = uploadForMultiple.files as FileList;
+async function UploadForSingle( event: Event ): void{
+  const uploadForSingle: HTMLInputElement = document.querySelector( '#UploadForSingle' ) as HTMLInputElement,
+    files: FileList = uploadForSingle.files as FileList;
 
   if( files.length !== 0 ){
-    console.dir( files );
+    const file: File = files[ 0 ] as File;
+
+    console.dir( file );
 
     const formData: FormData = new FormData();
 
-    formData.append( 'uploadType', 'multiple' );
+    formData.append( 'uploadType', 'single' );
+    formData.append( 'file', file, file.name );
+    formData.append( 'fileName', `${ file.name }` );
 
-    Array.from( files ).forEach( ( file: File ): void => {
-      formData.append( 'files', file, file.name );
-    } );
-
-    fetch( `${ https4deno }/simulation_servers_deno/upload?uploadType=multiple&isForcedWrite=false`, {
+    fetch( `${ https4deno }/simulation_servers_deno/upload?uploadType=single&isForcedWrite=false`, {
       body: formData,
       cache: 'no-cache',
       headers: {
         Accept: 'application/json',
+        'deno-custom-file-sri': `${ FileSRI( new Uint8Array( await file.arrayBuffer() ) ) }`,
         ...httpRequestHeaders,
       },
       method: 'POST',
@@ -165,7 +175,7 @@ function UploadForMultiple( event: Event ): void{
 
 onMounted( (): void => {
   console.log( `\n\n
-远端模块提供者：Vue3版本的“UploadForMultiple”的DOM已挂载。
+远端模块提供者：Vue3版本的“UploadForSingle”的DOM已挂载。
 \n\n` );
 } );
 </script>
