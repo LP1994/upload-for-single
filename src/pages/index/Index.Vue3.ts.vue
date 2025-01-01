@@ -18,7 +18,6 @@ CreateDate: 2024-1-1 00:00:00 星期一
 }
 
 main {
-
   > .title {
     width: 100%;
     height: auto;
@@ -111,7 +110,6 @@ main {
     }
 
   }
-
 }
 </style>
 <template>
@@ -140,7 +138,7 @@ main {
         </button>
       </section>
     </article>
-    <UploadForMultiple />
+    <UploadForSingle />
   </main>
 </template>
 <script
@@ -164,7 +162,7 @@ import {
   onMounted,
 } from 'vue';
 
-import UploadForMultiple from 'componentsDir/UploadForMultiple.Vue3.ts.vue';
+import UploadForSingle from 'componentsDir/UploadForSingle.Vue3.ts.vue';
 
 type T_State = {
   titleText: string;
