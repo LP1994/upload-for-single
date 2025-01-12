@@ -247,7 +247,7 @@ export default {
   node: nodeConfig,
   // optimization: optimizationConfig,
   optimization: {
-    minimize: false,
+    minimize: true,
   },
   output: outputConfig,
   /**
