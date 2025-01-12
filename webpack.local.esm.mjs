@@ -194,7 +194,10 @@ export default {
    */
   name: 'webpack.local.esm.mjs',
   node: nodeConfig,
-  optimization: optimizationConfig,
+  // optimization: optimizationConfig,
+  optimization: {
+    minimize: false,
+  },
   output: outputConfig,
   /**
    * 限制并行处理模块的数量。可用于微调性能或获得更可靠的分析结果。<br />
