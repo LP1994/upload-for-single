@@ -138,7 +138,7 @@ main {
         </button>
       </section>
     </article>
-    <UploadForSingle />
+    <!--<UploadForSingle />-->
   </main>
 </template>
 <script
@@ -162,7 +162,7 @@ import {
   onMounted,
 } from 'vue';
 
-import UploadForSingle from 'componentsDir/UploadForSingle.Vue3.ts.vue';
+// import UploadForSingle from 'componentsDir/UploadForSingle.Vue3.ts.vue';
 
 type T_State = {
   titleText: string;

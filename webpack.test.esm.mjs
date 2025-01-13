@@ -245,10 +245,7 @@ export default {
    */
   name: 'webpack.test.esm.mjs',
   node: nodeConfig,
-  // optimization: optimizationConfig,
-  optimization: {
-    minimize: true,
-  },
+  optimization: optimizationConfig,
   output: outputConfig,
   /**
    * 限制并行处理模块的数量。可用于微调性能或获得更可靠的分析结果。<br />
@@ -296,7 +293,7 @@ export default {
      */
     new MiniCssExtractPlugin( miniCssExtractPluginConfig ),
 
-    new SubresourceIntegrityPlugin( subresourceIntegrityPluginConfig ),
+    // new SubresourceIntegrityPlugin( subresourceIntegrityPluginConfig ),
 
     new webpack.DefinePlugin( definePluginConfig ),
     new webpack.ids.DeterministicChunkIdsPlugin( deterministicChunkIdsPluginConfig ),
