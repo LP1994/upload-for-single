@@ -96,6 +96,15 @@ function ModuleFederation_v2_Config_Fun( {
           // name: '',
         },
       },
+      {
+        './Rules': {
+          import: [
+            './src/components/Rules.Vue3.ts.vue',
+          ],
+          // 外露模块的自定义块名称，可选。
+          // name: '',
+        },
+      },
     ],
     shared: {
       vue: {
