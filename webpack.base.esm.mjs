@@ -1099,255 +1099,295 @@ const autoprefixerConfig = {
     /**
      * 缓存组可以继承和/或覆盖splitChunks.*的任何选项；但是test、priority和reuseExistingChunk只能在缓存组级别进行配置。要禁用任何默认缓存组，请将它们设置为false。<br />
      */
-    cacheGroups: ( () => {
-      /**
-       * 单页模式下的代码拆分策略。
-       */
-      const SPACacheGroups = {
-        VendorsCSS: {
-          /**
-           * 控制此缓存组选择哪些模块。省略它会选择所有模块。它可以匹配绝对模块资源路径或块名称。当块名称匹配时，块中的所有模块都会被选中。<br />
-           * 1、值类型：( module, { chunkGraph, moduleGraph, } ) => boolean、RegExp、string。<br />
-           * 2、当选择使用函数作为test选项的值时，函数的第1个参数module有如下参数：<br />
-           * module.resource：1个描述模块所在文件在磁盘上的绝对路径字符串。<br />
-           * module.type：1个描述模块类型的字符串，如：'javascript/auto'。<br />
-           * 3、请注意使用`[\\/]`作为跨平台兼容性的路径分隔符。<br />
-           */
-          test: /node_modules[\\/].*\.css$/i,
-          // 值类型：function、RegExp、string，允许按模块类型将模块分配给缓存组。
-          ...( () => {
-            return isProduction
-                   ? {
-                type: 'css/mini-extract',
-              }
-                   : {};
-          } )(),
-          name: 'VendorsCSS',
-        },
+    /*
+     cacheGroups: ( () => {
+     /!**
+     * 单页模式下的代码拆分策略。
+     *!/
+     const SPACacheGroups = {
+     VendorsCSS: {
+     /!**
+     * 控制此缓存组选择哪些模块。省略它会选择所有模块。它可以匹配绝对模块资源路径或块名称。当块名称匹配时，块中的所有模块都会被选中。<br />
+     * 1、值类型：( module, { chunkGraph, moduleGraph, } ) => boolean、RegExp、string。<br />
+     * 2、当选择使用函数作为test选项的值时，函数的第1个参数module有如下参数：<br />
+     * module.resource：1个描述模块所在文件在磁盘上的绝对路径字符串。<br />
+     * module.type：1个描述模块类型的字符串，如：'javascript/auto'。<br />
+     * 3、请注意使用`[\\/]`作为跨平台兼容性的路径分隔符。<br />
+     *!/
+     test: /node_modules[\\/].*\.css$/i,
+     // 值类型：function、RegExp、string，允许按模块类型将模块分配给缓存组。
+     ...( () => {
+     return isProduction
+     ? {
+     type: 'css/mini-extract',
+     }
+     : {};
+     } )(),
+     name: 'VendorsCSS',
+     },
 
-        VendorsJS: ( arr => {
-          return {
-            test: new RegExp( `node_modules[\\\\/](?!${ arr.join( '|' ) }).*\\.(js)$`, 'i' ),
-            name: 'VendorsJS',
-          };
-        } )( [
-          'axios[\\\\/]',
-          'echarts[\\\\/]',
-          'jquery[\\\\/]',
-          'swiper[\\\\/]',
-          // 表示所有以“@vue”开头的包名，例如：@vue/reactivity、@vue/runtime-dom、@vue/shared等等。
-          '@vue',
-          // 表示所有以“vue”开头的包名，例如：vue、vue-router、vuex等等。
-          'vue',
-          'pinia[\\\\/]',
-          'element-ui[\\\\/]',
-          'element-plus[\\\\/]',
-        ] ),
+     VendorsJS: ( arr => {
+     return {
+     test: new RegExp( `node_modules[\\\\/](?!${ arr.join( '|' ) }).*\\.(js)$`, 'i' ),
+     name: 'VendorsJS',
+     };
+     } )( [
+     'axios[\\\\/]',
+     'echarts[\\\\/]',
+     'jquery[\\\\/]',
+     'swiper[\\\\/]',
+     // 表示所有以“@vue”开头的包名，例如：@vue/reactivity、@vue/runtime-dom、@vue/shared等等。
+     '@vue',
+     // 表示所有以“vue”开头的包名，例如：vue、vue-router、vuex等等。
+     'vue',
+     'pinia[\\\\/]',
+     'element-ui[\\\\/]',
+     'element-plus[\\\\/]',
+     // 表示所有以“react”开头的包名，例如：react、react-dom等等。
+     'react',
+     ] ),
 
-        VueFamilyJS: ( arr => {
-          return {
-            test: new RegExp( `node_modules[\\\\/](${ arr.join( '|' ) }).*\\.(js)$`, 'i' ),
-            name: 'VueFamilyJS',
-          };
-        } )( [
-          // 表示所有以“@vue”开头的包名，例如：@vue/reactivity、@vue/runtime-dom、@vue/shared等等。
-          '@vue',
-          // 表示所有以“vue”开头的包名，例如：vue、vue-router、vuex等等。
-          'vue',
-          'pinia[\\\\/]',
-        ] ),
+     Vendors001JS: ( arr => {
+     return {
+     test: new RegExp( `node_modules[\\\\/](${ arr.map( item => item + '[\\\\/]' ).join( '|' ) }).*\\.(js)$`, 'i' ),
+     name: 'Vendors001JS',
+     };
+     } )( [
+     'axios',
+     'jquery',
+     'swiper',
+     ] ),
 
-        ElementUIJS: ( arr => {
-          return {
-            test: new RegExp( `node_modules[\\\\/](${ arr.map( item => item + '[\\\\/]' ).join( '|' ) }).*\\.(js)$`, 'i' ),
-            name: 'ElementUIJS',
-          };
-        } )( [
-          'element-ui',
-        ] ),
+     EchartsJS: {
+     test: /node_modules[\\/]echarts[\\/].*\.(js)$/i,
+     name: 'EchartsJS',
+     },
 
-        ElementPlusJS: ( arr => {
-          return {
-            test: new RegExp( `node_modules[\\\\/](${ arr.map( item => item + '[\\\\/]' ).join( '|' ) }).*\\.(js)$`, 'i' ),
-            name: 'ElementPlusJS',
-          };
-        } )( [
-          'element-plus',
-        ] ),
+     VueFamilyJS: ( arr => {
+     return {
+     test: new RegExp( `node_modules[\\\\/](${ arr.join( '|' ) }).*\\.(js)$`, 'i' ),
+     name: 'VueFamilyJS',
+     };
+     } )( [
+     // 表示所有以“@vue”开头的包名，例如：@vue/reactivity、@vue/runtime-dom、@vue/shared等等。
+     '@vue',
+     // 表示所有以“vue”开头的包名，例如：vue、vue-router、vuex等等。
+     'vue',
+     'pinia[\\\\/]',
+     ] ),
 
-        Vendors001JS: ( arr => {
-          return {
-            test: new RegExp( `node_modules[\\\\/](${ arr.map( item => item + '[\\\\/]' ).join( '|' ) }).*\\.(js)$`, 'i' ),
-            name: 'Vendors001JS',
-          };
-        } )( [
-          'axios',
-          'jquery',
-          'swiper',
-        ] ),
+     ElementUIJS: ( arr => {
+     return {
+     test: new RegExp( `node_modules[\\\\/](${ arr.map( item => item + '[\\\\/]' ).join( '|' ) }).*\\.(js)$`, 'i' ),
+     name: 'ElementUIJS',
+     };
+     } )( [
+     'element-ui',
+     ] ),
 
-        EchartsJS: {
-          test: /node_modules[\\/]echarts[\\/].*\.(js)$/i,
-          name: 'EchartsJS',
-        },
-      };
+     ElementPlusJS: ( arr => {
+     return {
+     test: new RegExp( `node_modules[\\\\/](${ arr.map( item => item + '[\\\\/]' ).join( '|' ) }).*\\.(js)$`, 'i' ),
+     name: 'ElementPlusJS',
+     };
+     } )( [
+     'element-plus',
+     ] ),
 
-      /**
-       * 多页模式下的代码拆分策略。
-       */
-      const MPACacheGroups = {
-        VendorsCSS: ( arr => {
-          return {
-            /**
-             * 控制此缓存组选择哪些模块。省略它会选择所有模块。它可以匹配绝对模块资源路径或块名称。当块名称匹配时，块中的所有模块都会被选中。<br />
-             * 1、值类型：( module, { chunkGraph, moduleGraph, } ) => boolean、RegExp、string。<br />
-             * 2、当选择使用函数作为test选项的值时，函数的第1个参数module有如下参数：<br />
-             * module.resource：1个描述模块所在文件在磁盘上的绝对路径字符串。<br />
-             * module.type：1个描述模块类型的字符串，如：'javascript/auto'。<br />
-             * 3、请注意使用`[\\/]`作为跨平台兼容性的路径分隔符。<br />
-             */
-            test: new RegExp( `node_modules[\\\\/](?!${ arr.map( item => item + '[\\\\/]' ).join( '|' ) }).*\\.css$`, 'i' ),
-            // 值类型：function、RegExp、string，允许按模块类型将模块分配给缓存组。
-            ...( () => {
-              return isProduction
-                     ? {
-                  type: 'css/mini-extract',
-                }
-                     : {};
-            } )(),
-            name: 'VendorsCSS',
-          };
-        } )( [
-          'swiper',
-          'element-ui',
-          'element-plus',
-        ] ),
+     ReactFamilyJS: ( arr => {
+     return {
+     test: new RegExp( `node_modules[\\\\/](${ arr.join( '|' ) }).*\\.(js)$`, 'i' ),
+     name: 'ReactFamilyJS',
+     };
+     } )( [
+     // 表示所有以“react”开头的包名，例如：react、react-dom等等。
+     'react',
+     ] ),
+     };
 
-        SwiperCSS: {
-          test: /node_modules[\\/]swiper[\\/].*\.css$/i,
-          ...( () => {
-            return isProduction
-                   ? {
-                type: 'css/mini-extract',
-              }
-                   : {};
-          } )(),
-          name: 'SwiperCSS',
-        },
-        ELEMENTCSS: {
-          test: /node_modules[\\/]element-ui[\\/].*\.css$/i,
-          ...( () => {
-            return isProduction
-                   ? {
-                type: 'css/mini-extract',
-              }
-                   : {};
-          } )(),
-          name: 'ELEMENTCSS',
-        },
-        ElementPlusCSS: {
-          test: /node_modules[\\/]element-plus[\\/].*\.css$/i,
-          ...( () => {
-            return isProduction
-                   ? {
-                type: 'css/mini-extract',
-              }
-                   : {};
-          } )(),
-          name: 'ElementPlusCSS',
-        },
+     /!**
+     * 多页模式下的代码拆分策略。
+     *!/
+     const MPACacheGroups = {
+     VendorsCSS: ( arr => {
+     return {
+     /!**
+     * 控制此缓存组选择哪些模块。省略它会选择所有模块。它可以匹配绝对模块资源路径或块名称。当块名称匹配时，块中的所有模块都会被选中。<br />
+     * 1、值类型：( module, { chunkGraph, moduleGraph, } ) => boolean、RegExp、string。<br />
+     * 2、当选择使用函数作为test选项的值时，函数的第1个参数module有如下参数：<br />
+     * module.resource：1个描述模块所在文件在磁盘上的绝对路径字符串。<br />
+     * module.type：1个描述模块类型的字符串，如：'javascript/auto'。<br />
+     * 3、请注意使用`[\\/]`作为跨平台兼容性的路径分隔符。<br />
+     *!/
+     test: new RegExp( `node_modules[\\\\/](?!${ arr.map( item => item + '[\\\\/]' ).join( '|' ) }).*\\.css$`, 'i' ),
+     // 值类型：function、RegExp、string，允许按模块类型将模块分配给缓存组。
+     ...( () => {
+     return isProduction
+     ? {
+     type: 'css/mini-extract',
+     }
+     : {};
+     } )(),
+     name: 'VendorsCSS',
+     };
+     } )( [
+     'swiper',
+     'element-ui',
+     'element-plus',
+     ] ),
 
-        VendorsJS: ( arr => {
-          return {
-            test: new RegExp( `node_modules[\\\\/](?!${ arr.join( '|' ) }).*\\.(js)$`, 'i' ),
-            name: 'VendorsJS',
-          };
-        } )( [
-          'axios[\\\\/]',
-          'echarts[\\\\/]',
-          'jquery[\\\\/]',
-          'swiper[\\\\/]',
-          // 表示所有以“@vue”开头的包名，例如：@vue/reactivity、@vue/runtime-dom、@vue/shared等等。
-          '@vue',
-          // 表示所有以“vue”开头的包名，例如：vue、vue-router、vuex等等。
-          'vue',
-          'pinia[\\\\/]',
-          'element-ui[\\\\/]',
-          'element-plus[\\\\/]',
-        ] ),
+     ELEMENTCSS: {
+     test: /node_modules[\\/]element-ui[\\/].*\.css$/i,
+     ...( () => {
+     return isProduction
+     ? {
+     type: 'css/mini-extract',
+     }
+     : {};
+     } )(),
+     name: 'ELEMENTCSS',
+     },
+     ElementPlusCSS: {
+     test: /node_modules[\\/]element-plus[\\/].*\.css$/i,
+     ...( () => {
+     return isProduction
+     ? {
+     type: 'css/mini-extract',
+     }
+     : {};
+     } )(),
+     name: 'ElementPlusCSS',
+     },
+     SwiperCSS: {
+     test: /node_modules[\\/]swiper[\\/].*\.css$/i,
+     ...( () => {
+     return isProduction
+     ? {
+     type: 'css/mini-extract',
+     }
+     : {};
+     } )(),
+     name: 'SwiperCSS',
+     },
 
-        VueFamilyJS: ( arr => {
-          return {
-            test: new RegExp( `node_modules[\\\\/](${ arr.join( '|' ) }).*\\.(js)$`, 'i' ),
-            name: 'VueFamilyJS',
-          };
-        } )( [
-          // 表示所有以“@vue”开头的包名，例如：@vue/reactivity、@vue/runtime-dom、@vue/shared等等。
-          '@vue',
-          // 表示所有以“vue”开头的包名，例如：vue、vue-router、vuex等等。
-          'vue',
-          'pinia[\\\\/]',
-        ] ),
+     VendorsJS: ( arr => {
+     return {
+     test: new RegExp( `node_modules[\\\\/](?!${ arr.join( '|' ) }).*\\.(js)$`, 'i' ),
+     name: 'VendorsJS',
+     };
+     } )( [
+     'axios[\\\\/]',
+     'echarts[\\\\/]',
+     'jquery[\\\\/]',
+     'swiper[\\\\/]',
+     // 表示所有以“@vue”开头的包名，例如：@vue/reactivity、@vue/runtime-dom、@vue/shared等等。
+     '@vue',
+     // 表示所有以“vue”开头的包名，例如：vue、vue-router、vuex等等。
+     'vue',
+     'pinia[\\\\/]',
+     'element-ui[\\\\/]',
+     'element-plus[\\\\/]',
+     // 表示所有以“react”开头的包名，例如：react、react-dom等等。
+     'react',
+     // 表示所有以“@module-federation”开头的包名，例如：@module-federation/enhanced/runtime、@module-federation/enhanced/webpack等等。
+     // '@module-federation',
+     ] ),
 
-        ELEMENTJS: {
-          test: /node_modules[\\/]element-ui[\\/].*\.(js)$/i,
-          name: 'ELEMENTJS',
-        },
-        ElementPlusJS: {
-          test: /node_modules[\\/]element-plus[\\/].*\.(js)$/i,
-          name: 'ElementPlusJS',
-        },
+     /!*
+     MFv2JS: ( arr => {
+     return {
+     test: new RegExp( `node_modules[\\\\/](${ arr.join( '|' ) }).*\\.(js)$`, 'i' ),
+     name: 'MFv2JS',
+     };
+     } )( [
+     // 表示所有以“@module-federation”开头的包名，例如：@module-federation/enhanced/runtime、@module-federation/enhanced/webpack等等。
+     '@module-federation',
+     ] ),
+     *!/
 
-        AxiosJS: {
-          test: /node_modules[\\/]axios[\\/].*\.(js)$/i,
-          name: 'AxiosJS',
-        },
-        jQueryJS: {
-          test: /node_modules[\\/]jquery[\\/].*\.(js)$/i,
-          name: 'jQueryJS',
-        },
-        SwiperJS: {
-          test: /node_modules[\\/]swiper[\\/].*\.(js)$/i,
-          name: 'SwiperJS',
-        },
+     AxiosJS: {
+     test: /node_modules[\\/]axios[\\/].*\.(js)$/i,
+     name: 'AxiosJS',
+     },
+     jQueryJS: {
+     test: /node_modules[\\/]jquery[\\/].*\.(js)$/i,
+     name: 'jQueryJS',
+     },
+     SwiperJS: {
+     test: /node_modules[\\/]swiper[\\/].*\.(js)$/i,
+     name: 'SwiperJS',
+     },
 
-        EchartsJS: {
-          test: /node_modules[\\/]echarts[\\/].*\.(js)$/i,
-          name: 'EchartsJS',
-        },
-      };
+     EchartsJS: {
+     test: /node_modules[\\/]echarts[\\/].*\.(js)$/i,
+     name: 'EchartsJS',
+     },
 
-      Object.entries( SPACacheGroups ).forEach( ( item, i, ) => {
-        // 选项决定了哪些缓存组应该优先拆分，尤其在多个缓存组都匹配到同一个模块时，可以指定哪个缓存组更优先处理该模块。自定义缓存组中该值默认值为0，默认缓存组该值为-20。
-        item[ 1 ].priority = 100000000 - i;
-        // 告诉webpack忽略splitChunks.minSize、splitChunks.minChunks、splitChunks.maxAsyncRequests和splitChunks.maxInitialRequests选项，并始终为此缓存组创建块。并且使enforceSizeThreshold设置生效。
-        item[ 1 ].enforce = true;
-        /**
-         * 1、如果设置为true，Webpack会尝试复用已经存在的chunk，而不是重新创建一个新的chunk。这样可以减少冗余的chunk文件，优化最终的输出。<br />
-         * 2、设置为false（默认值），Webpack会为每个匹配的模块生成一个新的chunk，而不是复用现有的chunk。<br />
-         *
-         * @type {boolean}
-         */
-        item[ 1 ].reuseExistingChunk = true;
-      } );
-      Object.entries( MPACacheGroups ).forEach( ( item, i, ) => {
-        // 选项决定了哪些缓存组应该优先拆分，尤其在多个缓存组都匹配到同一个模块时，可以指定哪个缓存组更优先处理该模块。自定义缓存组中该值默认值为0，默认缓存组该值为-20。
-        item[ 1 ].priority = 100000000 - i;
-        // 告诉webpack忽略splitChunks.minSize、splitChunks.minChunks、splitChunks.maxAsyncRequests和splitChunks.maxInitialRequests选项，并始终为此缓存组创建块。并且使enforceSizeThreshold设置生效。
-        item[ 1 ].enforce = true;
-        /**
-         * 1、如果设置为true，Webpack会尝试复用已经存在的chunk，而不是重新创建一个新的chunk。这样可以减少冗余的chunk文件，优化最终的输出。<br />
-         * 2、设置为false（默认值），Webpack会为每个匹配的模块生成一个新的chunk，而不是复用现有的chunk。<br />
-         *
-         * @type {boolean}
-         */
-        item[ 1 ].reuseExistingChunk = true;
-      } );
+     VueFamilyJS: ( arr => {
+     return {
+     test: new RegExp( `node_modules[\\\\/](${ arr.join( '|' ) }).*\\.(js)$`, 'i' ),
+     name: 'VueFamilyJS',
+     };
+     } )( [
+     // 表示所有以“@vue”开头的包名，例如：@vue/reactivity、@vue/runtime-dom、@vue/shared等等。
+     '@vue',
+     // 表示所有以“vue”开头的包名，例如：vue、vue-router、vuex等等。
+     'vue',
+     'pinia[\\\\/]',
+     ] ),
 
-      return isSPA
-             ? SPACacheGroups
-             : MPACacheGroups;
-    } )(),
+     ELEMENTJS: {
+     test: /node_modules[\\/]element-ui[\\/].*\.(js)$/i,
+     name: 'ELEMENTJS',
+     },
+     ElementPlusJS: {
+     test: /node_modules[\\/]element-plus[\\/].*\.(js)$/i,
+     name: 'ElementPlusJS',
+     },
+
+     ReactFamilyJS: ( arr => {
+     return {
+     test: new RegExp( `node_modules[\\\\/](${ arr.join( '|' ) }).*\\.(js)$`, 'i' ),
+     name: 'ReactFamilyJS',
+     };
+     } )( [
+     // 表示所有以“react”开头的包名，例如：react、react-dom等等。
+     'react',
+     ] ),
+     };
+
+     Object.entries( SPACacheGroups ).forEach( ( item, i, ) => {
+     // 选项决定了哪些缓存组应该优先拆分，尤其在多个缓存组都匹配到同一个模块时，可以指定哪个缓存组更优先处理该模块。自定义缓存组中该值默认值为0，默认缓存组该值为-20。
+     item[ 1 ].priority = 100000000 - i;
+     // 告诉webpack忽略splitChunks.minSize、splitChunks.minChunks、splitChunks.maxAsyncRequests和splitChunks.maxInitialRequests选项，并始终为此缓存组创建块。并且使enforceSizeThreshold设置生效。
+     item[ 1 ].enforce = true;
+     /!**
+     * 1、如果设置为true，Webpack会尝试复用已经存在的chunk，而不是重新创建一个新的chunk。这样可以减少冗余的chunk文件，优化最终的输出。<br />
+     * 2、设置为false（默认值），Webpack会为每个匹配的模块生成一个新的chunk，而不是复用现有的chunk。<br />
+     *
+     * @type {boolean}
+     *!/
+     item[ 1 ].reuseExistingChunk = true;
+     } );
+     Object.entries( MPACacheGroups ).forEach( ( item, i, ) => {
+     // 选项决定了哪些缓存组应该优先拆分，尤其在多个缓存组都匹配到同一个模块时，可以指定哪个缓存组更优先处理该模块。自定义缓存组中该值默认值为0，默认缓存组该值为-20。
+     item[ 1 ].priority = 100000000 - i;
+     // 告诉webpack忽略splitChunks.minSize、splitChunks.minChunks、splitChunks.maxAsyncRequests和splitChunks.maxInitialRequests选项，并始终为此缓存组创建块。并且使enforceSizeThreshold设置生效。
+     item[ 1 ].enforce = true;
+     /!**
+     * 1、如果设置为true，Webpack会尝试复用已经存在的chunk，而不是重新创建一个新的chunk。这样可以减少冗余的chunk文件，优化最终的输出。<br />
+     * 2、设置为false（默认值），Webpack会为每个匹配的模块生成一个新的chunk，而不是复用现有的chunk。<br />
+     *
+     * @type {boolean}
+     *!/
+     item[ 1 ].reuseExistingChunk = true;
+     } );
+
+     return isSPA
+     ? SPACacheGroups
+     : MPACacheGroups;
+     } )(),
+     */
   };
 
 // 以下一共会生成34个node子进程。
@@ -10971,7 +11011,7 @@ ${ JSON.stringify( req.headers, null, 4 ) }
        * 1、“optimization.usedExports”不能与cacheUnaffected一起使用，因为导出使用是一种全局影响。<br />
        */
       usedExports: true,
-      // splitChunks: splitChunksConfig,
+      splitChunks: splitChunksConfig,
     }
                        : {
       // 开发环境，默认值为：'named'。
@@ -11023,7 +11063,7 @@ ${ JSON.stringify( req.headers, null, 4 ) }
        * 1、“optimization.usedExports”不能与cacheUnaffected一起使用，因为导出使用是一种全局影响。<br />
        */
       usedExports: true,
-      // splitChunks: splitChunksConfig,
+      splitChunks: splitChunksConfig,
     },
   /**
    * @type {object}
